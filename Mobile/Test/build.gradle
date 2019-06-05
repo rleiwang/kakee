@@ -1,0 +1,12 @@
+plugins {
+    id 'groovy'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4',
+            'io.appium:java-client:3.4.0'
+}

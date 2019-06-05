@@ -1,0 +1,20 @@
+plugins {
+    id 'org.openbakery.xcode-plugin' version '0.13.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+xcodebuild {
+    version = '7'
+    target = 'kakee'
+    scheme = 'kakee'
+    type = 'iOS'
+    configuration = 'Debug'
+    destination {
+        platform = 'iOS Simulator'
+        name = 'iPad 2'
+        os = '9.2'
+    }
+}

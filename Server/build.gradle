@@ -1,0 +1,267 @@
+plugins {
+    id 'idea'
+    id 'java'
+    id 'application'
+    id 'groovy'
+    id 'de.undercouch.download' version '2.1.0'
+    id 'com.github.johnrengelman.shadow' version '1.2.3'
+}
+
+mainClassName = 'biz.kakee.Main'
+//mainClassName = 'biz.kakee.external.gmail.Client'
+//mainClassName = 'biz.kakee.utils.Encrypt'
+//mainClassName = 'biz.kakee.external.gcm.HttpSender'
+applicationName = 'kakee'
+
+applicationDefaultJvmArgs = ["-Dcom.sun.management.jmxremote.port=8199",
+                             "-Dcom.sun.management.jmxremote.authenticate=false",
+                             "-Dcom.sun.management.jmxremote.ssl=false"]
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+configurations {
+    apt
+    provided
+    stratio {
+        transitive = false
+    }
+
+    compile.exclude module: 'guava-jdk5'
+}
+
+repositories {
+    mavenCentral()
+}
+
+sourceSets {
+    jmh
+    generated
+    main {
+        // append dagger-compiler to classpath, compileJava will generate sources and compile under ${buildDir}
+        // But Intellij won't be able to find the java class under ${buildDir}
+        compileClasspath += configurations.apt
+        compileClasspath += configurations.provided
+    }
+}
+
+ext.dw_version = "0.9.3"
+ext.dgr_version = "2.5"
+ext.cassandra_version = "3.9"
+ext.stratio_version = "${cassandra_version}.5"
+ext.datastax_version = "3.1.3"
+ext.jackson_version = "2.8.5"
+ext.jetty_version = "9.2.14.v20151106"
+ext.protobuf_version = "3.0.0-beta-2"
+ext.aeron_version = "1.0.2"
+ext.jwt_version = "4.12"
+ext.spock_version = "1.0-groovy-2.4"
+ext.google_api_version = "1.22.0"
+ext.braintree_version = "2.68.0"
+
+dependencies {
+    compile "io.dropwizard:dropwizard-core:${dw_version}",
+            "io.dropwizard:dropwizard-auth:${dw_version}",
+            "com.liveperson:dropwizard-websockets:1.2",
+            "com.datastax.cassandra:cassandra-driver-core:${datastax_version}",
+            "com.datastax.cassandra:cassandra-driver-extras:${datastax_version}",
+            "com.datastax.cassandra:cassandra-driver-mapping:${datastax_version}",
+            "com.fasterxml.jackson.core:jackson-databind:${jackson_version}",
+            "com.fasterxml.jackson.core:jackson-core:${jackson_version}",
+            "com.fasterxml.jackson.core:jackson-annotations:${jackson_version}",
+            "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:${jackson_version}",
+            "com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:${jackson_version}",
+            "org.eclipse.jetty:jetty-server:${jetty_version}",
+            "org.eclipse.jetty:jetty-webapp:${jetty_version}",
+            "org.eclipse.jetty:jetty-servlets:${jetty_version}",
+            "org.eclipse.jetty.websocket:javax-websocket-server-impl:${jetty_version}",
+            "org.eclipse.jetty.websocket:websocket-common:${jetty_version}",
+            "com.google.dagger:dagger:${dgr_version}",
+            "com.google.protobuf:protobuf-java:${protobuf_version}",
+            "com.nimbusds:nimbus-jose-jwt:${jwt_version}",
+            "io.aeron:aeron-all:${aeron_version}",
+            "com.stratio.cassandra:cassandra-lucene-index-builder:${stratio_version}"
+    compile "com.google.api-client:google-api-client:${google_api_version}",
+            "com.google.oauth-client:google-oauth-client-jetty:${google_api_version}",
+            "com.google.apis:google-api-services-gmail:v1-rev48-${google_api_version}",
+            'javax.mail:mail:1.4.7'
+    compile 'com.google.gcm:gcm-server:1.0.0',
+            'com.google.maps:google-maps-services:0.1.17'
+    compile "com.braintreepayments.gateway:braintree-java:${braintree_version}"
+
+    compileOnly "org.projectlombok:lombok:1.16.10"
+    testCompile "junit:junit:4.12",
+            "org.projectlombok:lombok:1.16.6",
+            "org.spockframework:spock-core:${spock_version}",
+            "com.fasterxml.jackson.module:jackson-module-jsonSchema:${jackson_version}",
+            "io.dropwizard:dropwizard-testing:${dw_version}"
+    jmhCompile project,
+            "org.openjdk.jmh:jmh-core:1.11.3",
+            "org.projectlombok:lombok:1.16.6",
+            "org.openjdk.jmh:jmh-generator-annprocess:1.11.3"
+    apt "com.google.dagger:dagger-compiler:${dgr_version}"
+    stratio "com.stratio.cassandra:cassandra-lucene-index-plugin:${stratio_version}"
+}
+
+idea {
+    module {
+        scopes.PROVIDED.plus += [configurations.jmhCompile]
+        //scopes.PROVIDED.minus += [configurations.compile]
+    }
+}
+
+clean {
+    delete sourceSets.generated.java
+}
+
+run {
+    jvmArgs applicationDefaultJvmArgs
+    jvmArgs '-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
+    args 'server', 'src/main/resources/config.yml'
+}
+
+applicationDistribution.from(sourceSets.main.resources) {
+    into("conf")
+}
+
+task dagger(type: JavaCompile, group: 'build', description: 'generate Dagger sources') {
+    source = sourceSets.main.java
+    classpath = configurations.compile + configurations.provided + configurations.apt
+    options.compilerArgs = ["-proc:only"]
+    destinationDir = sourceSets.generated.java.srcDirs.first()
+}
+
+ext.cassandra_artifact = "apache-cassandra-${cassandra_version}"
+task downloadCassandra(type: de.undercouch.gradle.tasks.download.Download) {
+    src "http://apache.osuosl.org/cassandra/${cassandra_version}/$cassandra_artifact-bin.tar.gz"
+    dest file("$projectDir/downloads/apache-cassandra.tgz")
+    outputs.file dest
+}
+
+task unzipCassandra(type: Copy) {
+    inputs.file downloadCassandra.outputs
+    outputs.file file("$buildDir/$cassandra_artifact/bin/cassandra")
+    from tarTree(inputs.files.singleFile)
+    into buildDir
+    doFirst {
+        copy {
+            from configurations.stratio
+            into file("$buildDir/${cassandra_artifact}/lib")
+        }
+    }
+}
+
+task copyStratioLibs(type: Copy) {
+    from configurations.stratio
+    into file("$buildDir/stratio/lib")
+}
+
+task copyStratioDockerfile(type: Copy) {
+    from new File("$buildDir/../docker/stratio", "Dockerfile")
+    into file("$buildDir/stratio")
+}
+
+task copyKakeeDockerfile(type: Copy) {
+    from new File("$buildDir/../docker/server", "Dockerfile")
+    into file("$buildDir/distributions")
+}
+
+ext.cassandraPid = "cassandra.pid"
+task startCassandra(type: Exec) {
+    inputs.file unzipCassandra.outputs
+    outputs.file file("$buildDir/$cassandraPid")
+    workingDir = "$buildDir/$cassandra_artifact"
+    standardOutput = new ByteArrayOutputStream()
+    commandLine "sh", "$projectDir/src/test/resources/startCassandra.sh", outputs.files.singleFile
+    doLast {
+        if (standardOutput.toString().contains("Connection to localhost port 9042 [tcp/*] succeeded")) {
+            return;
+        }
+        def failed = true;
+        file("$workingDir/logs/system.log").newReader("UTF-8").eachLine { line ->
+            System.out.println(line);
+            if (line.endsWith("state jump to NORMAL")) {
+                failed = false;
+                return;
+            }
+        }
+
+        if (failed) {
+            throw new GradleException("failed to start cassandra");
+        }
+    }
+}
+
+task stopCassandra(type: Exec) {
+    inputs.file file("$buildDir/$cassandraPid")
+    commandLine "sh", "$projectDir/src/test/resources/stopCassandra.sh", inputs.files.singleFile
+    doLast {
+        exec {
+            commandLine "rm", inputs.files.singleFile
+        }
+    }
+}
+
+task createSchema(type: Exec, dependsOn: ['startCassandra']) {
+    workingDir "$projectDir/src/main/schema"
+    executable "sh"
+    args "create_schema.sh"
+    environment CASSANDRA_HOME: "$buildDir/$cassandra_artifact"
+}
+
+shadowJar {
+    doFirst {
+        mainClassName = 'biz.kakee.JmhMain'
+        // the following doesn't work
+        // manifest {
+        //    attributes "TEST": "biz.kakee.JmhMain"
+        //}
+    }
+    classifier = "jmh"
+
+    from sourceSets.jmh.output
+    from sourceSets.main.output
+    from project.configurations.jmhRuntime
+}
+
+task downloadProtobuf(type: de.undercouch.gradle.tasks.download.Download) {
+    src "https://github.com/google/protobuf/releases/download/v${protobuf_version}/" +
+            "protoc-${protobuf_version}-osx-x86_64.zip"
+    dest file("$projectDir/downloads/protoc-${protobuf_version}.zip")
+    outputs.file dest
+}
+
+task unzipProtobuf(type: Copy) {
+    inputs.file downloadProtobuf.outputs
+    outputs.file file("$buildDir/protobuf")
+    from zipTree(inputs.files.singleFile)
+    into outputs.files.singleFile
+}
+
+task runProtoc(type: Exec, dependsOn: ['unzipProtobuf']) {
+    inputs.file file("src/proto")
+    doFirst {
+        def protocArgs = []
+        protocArgs << "--java_out=${sourceSets.generated.java.srcDirs.first()}"
+        protocArgs << "--proto_path=${inputs.files.singleFile}"
+        fileTree(inputs.files.singleFile).each { File file -> protocArgs << file.canonicalPath }
+        args protocArgs
+    }
+    workingDir unzipProtobuf.outputs.files.singleFile
+    executable "./protoc"
+    standardOutput System.out
+    errorOutput System.err
+}
+
+distributions {
+    main {
+        contents {
+            from "private_key.der"
+            from "public_key.der"
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.10'
+}

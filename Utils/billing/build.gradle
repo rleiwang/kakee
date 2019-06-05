@@ -1,0 +1,25 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '1.2.4'
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile project(':Server')
+    compile "com.beust:jcommander:1.58"
+}
+
+shadowJar {
+    baseName = project.name
+    zip64 = true
+
+    manifest {
+        attributes 'Main-Class': 'biz.kakee.utils.Billing'
+    }
+}

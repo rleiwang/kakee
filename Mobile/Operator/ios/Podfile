@@ -1,0 +1,5 @@
+target "kakee" do
+  pod 'Braintree'
+  pod 'PayPalHereSDK/Release'
+  pod 'SquareRegisterSDK'
+end

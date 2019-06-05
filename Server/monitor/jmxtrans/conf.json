@@ -1,0 +1,579 @@
+{
+  "servers": [
+    {
+      "port": "8199",
+      "alias": "${hostId}",
+      "host": "localhost",
+      "numQueryThreads": 1,
+      "queries": [
+        {
+          "obj": "java.lang:type=Memory",
+          "attr": [
+            "HeapMemoryUsage",
+            "NonHeapMemoryUsage"
+          ],
+          "resultAlias": "JVM.Memory",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "kakee"
+              },
+              "resultTags": [
+                "typeName",
+                "attributeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "java.lang:type=OperatingSystem",
+          "attr": [
+            "OpenFileDescriptorCount",
+            "CommittedVirtualMemorySize",
+            "ProcessCpuLoad",
+            "ProcessCpuTime"
+          ],
+          "resultAlias": "JVM.OperatingSystem",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "kakee"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "java.lang:type=Threading",
+          "attr": [
+            "PeakThreadCount",
+            "DaemonThreadCount",
+            "ThreadCount"
+          ],
+          "resultAlias": "JVM.Threading",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "kakee"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "java.nio:type=BufferPool,name=*",
+          "attr": [
+            "Count",
+            "TotalCapacity",
+            "MemoryUsed"
+          ],
+          "resultAlias": "JVM.BufferPool",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "kakee"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "metrics:name=operator.conns",
+          "attr": [],
+          "resultAlias": "connections",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "operator"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "metrics:name=operator.errs",
+          "attr": [],
+          "resultAlias": "errors",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "operator"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "metrics:name=operator.msgs*",
+          "attr": [],
+          "resultAlias": "messages",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "operator"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "metrics:name=user.conns",
+          "attr": [],
+          "resultAlias": "connections",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "user"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "metrics:name=user.errs",
+          "attr": [],
+          "resultAlias": "errors",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "user"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "metrics:name=user.msgs*",
+          "attr": [],
+          "resultAlias": "messages",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "user"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "port": "7199",
+      "alias": "${hostId}",
+      "host": "localhost",
+      "numQueryThreads": 1,
+      "queries": [
+        {
+          "obj": "java.lang:type=Memory",
+          "attr": [
+            "HeapMemoryUsage",
+            "NonHeapMemoryUsage"
+          ],
+          "resultAlias": "JVM.Memory",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "cassandra"
+              },
+              "resultTags": [
+                "typeName",
+                "attributeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "java.lang:type=OperatingSystem",
+          "attr": [
+            "OpenFileDescriptorCount",
+            "CommittedVirtualMemorySize",
+            "ProcessCpuLoad",
+            "ProcessCpuTime"
+          ],
+          "resultAlias": "JVM.OperatingSystem",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "cassandra"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "java.lang:type=Threading",
+          "attr": [
+            "PeakThreadCount",
+            "DaemonThreadCount",
+            "ThreadCount"
+          ],
+          "resultAlias": "JVM.Threading",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "cassandra"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "java.nio:type=BufferPool,name=*",
+          "attr": [
+            "Count",
+            "TotalCapacity",
+            "MemoryUsed"
+          ],
+          "resultAlias": "JVM.BufferPool",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "tags": {
+                "cat": "cassandra"
+              },
+              "resultTags": [
+                "typeName"
+              ]
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=Compaction,*",
+          "attr": [],
+          "resultAlias": "Compaction",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=Keyspace,keyspace=kakee,name=*Size",
+          "attr": [],
+          "resultAlias": "Kakee.Size",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=Keyspace,keyspace=kakee,name=*Count",
+          "attr": [],
+          "resultAlias": "Kakee.Count",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=Keyspace,keyspace=kakee,name=*Used",
+          "attr": [],
+          "resultAlias": "Kakee.Used",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=*Latency",
+          "attr": [],
+          "resultAlias": "ClientRequest",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Timeouts",
+          "attr": [],
+          "resultAlias": "ClientRequest",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=Failures",
+          "attr": [],
+          "resultAlias": "ClientRequest",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=ClientRequest,scope=*,name=U*",
+          "attr": [],
+          "resultAlias": "ClientRequest",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=Storage,name=*",
+          "attr": [],
+          "resultAlias": "Storage",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "org.apache.cassandra.metrics:type=ThreadPools,*",
+          "attr": [],
+          "resultAlias": "ThreadPools",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        },
+        {
+          "obj": "com.stratio.cassandra.lucene:type=Lucene,keyspace=kakee,*",
+          "attr": [],
+          "resultAlias": "Lucene",
+          "outputWriters": [
+            {
+              "@class": "com.googlecode.jmxtrans.model.output.InfluxDbWriterFactory",
+              "url": "http://${influxdb}:8086/",
+              "username": "admin",
+              "password": "admin",
+              "database": "kakee",
+              "retentionPolicy": "kakee.6d",
+              "resultTags": [
+                "typeName"
+              ],
+              "tags": {
+                "cat": "cassandra"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

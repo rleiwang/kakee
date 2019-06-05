@@ -1,0 +1,20 @@
+plugins {
+    id 'org.openbakery.xcode-plugin' version '0.13.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+xcodebuild {
+    version = '7'
+    target = 'User'
+    scheme = 'User'
+    type = 'iOS'
+    configuration = 'Debug'
+    destination {
+        platform = 'iOS Simulator'
+        name = 'iPhone 6 Plus'
+        os = '9.2'
+    }
+}

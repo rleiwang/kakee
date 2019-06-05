@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+option java_package = "biz.kakee.proto";
+option java_outer_classname = "PVO";
+
+message Entity {
+  string channel = 1;
+  int32 streamId = 2;
+}
+
+message IPC {
+  Entity source = 1;
+}
